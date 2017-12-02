@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>json</title>
+</head>
+<body>
+	<script>
+	var log = function() {
+		console.log.apply(console, arguments)
+	}
+		log(JSON.stringify(null))
+		log(JSON.stringify('abc'))
+		log(JSON.stringify(123))
+		log(JSON.stringify(true))
+		log(JSON.stringify(undefined)) //不支持 undefined，会得到 undefined
+		log(JSON.stringify([]))
+		log(JSON.stringify({}))
+		log(JSON.stringify(log)) //不支持 function，会得到 undefined
+
+	var book = {
+		title: 'milk',
+		author: ['nake', 'lily'],
+		edition: 1,
+		year: 2017,
+	}
+
+	var stringifyText = JSON.stringify(book)
+	log('stringifyText', stringifyText)
+
+	//利用 JSON.stringify 的第二个参数为数组，可以处理 js 对象字面量数据，使结果只返回具有数组中指定的属性。
+	var stringifyText01 = JSON.stringify(book,['title', 'author'])
+	log('stringifyText01', stringifyText01)
+
+	//利用 JSON.stringify 的第二个参数为函数，可以处理 js 对象字面量数据，return undefined 时相当于删除该属性。
+	var stringifyText02 = JSON.stringify(book,function(key, value){
+		switch(key){
+			case "title":
+				return value.repeat(20)
+			case "author":
+				return 'lily'
+			case 'edition':
+				return undefined
+			default:
+				return value
+		}
+	})
+	log('stringifyText02', stringifyText02)
+
+	//自定义 json 的输出格式，如将其自动换行，前面加四个空格。
+	var stringifyText03 = JSON.stringify(book, null, 4)
+	log('stringifyText03', stringifyText03)
+
+
+	var stringifyText04 = JSON.stringify(book, null, '-		-')
+	log('stringifyText04', stringifyText04)
+
+	//任何对象都可以设置自己的 toJSON 方法
+	var book01 = {
+		title: 'milk',
+		author: ['nake', 'lily'],
+		edition: 1,
+		year: 2017,
+		toJSON: function(){
+			// log('log tojson ', book01)
+			// return this.title
+			// return undefined
+			this.title = 'milk+coffee'
+			return this === book01
+		}
+	}
+
+	var book02 = {
+		child: book01,
+		name: 'coffee'
+	}
+
+	// var stringifyText05 = JSON.stringify(book01, null, 4)
+	// log('stringifyText05', stringifyText05)
+
+	var stringifyText05 = JSON.stringify(book02, null, 4)
+	log('stringifyText05', stringifyText05)
+	log('stringifyText05.child', stringifyText05.child)
+
+	//不存在的属性在 log 时，会得到 undefined
+	log('stringifyText05.child1', stringifyText05.child1)
+
+	var stringifyText06 = JSON.stringify(book01, null, 4)
+	log('stringifyText06', stringifyText06)
+
+	/*总结：
+	当一个对象传入 JSON.stringify 中进行序列化时，顺序有四步：
+	1、先查看传入的对象是否有自定义的 toJSON 方法，
+	如果有，则调用该方法返回值，再将该方法的返回值传入；
+	若传入的对象没有 toJSON 方法，则将传入的对象传入；
+	2、看 JSON.stringify 方法有没有第二个参数（过滤器函数），有的话将第一步返回的值传入过滤器
+	3、用第二步规定的过滤器处理传入的对象（序列化）；
+	4、若果有第三个参数，执行相应的格式化（即按照参数进行输出）
+	*/
+
+	//JSON.parse()
+	var books = {
+		title: 'milk',
+		author: ['nake', 'lily'],
+		edition: 1,
+		year: 2017,
+		releaseData: 
+			new Date(2017, 8, 8)
+			// console.log
+		
+	}
+
+	var jsonString = JSON.stringify(books, null, 4)
+	log('jsonString', jsonString)
+
+	var booksCopy = JSON.parse(jsonString, function(key, value){
+		if(key === "releaseData") {
+			return new Date()
+		} else {
+			return value
+		}
+	})
+	log('booksCopy', booksCopy)
+	</script>
+</body>
+</html>
