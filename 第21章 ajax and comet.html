@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ajax and comet</title>
+</head>
+<body>
+	<script>
+		//caller callee 属性的区别
+		//caller 返回正在执行的函数的调用者(es5 中废除了 arguments.caller 属性,用 arguments.callee.caller 来查看正在执行的函数)
+		//callee 返回正在执行的函数
+		//用法如下：
+		var talk = function() {
+			//返回正在执行的函数 talk函数
+			console.log(arguments.callee)
+			//返回 undefined (es5 中废除了 arguments.caller 属性,用 arguments.callee.caller 来查看正在执行的函数)
+			console.log(arguments.caller)
+			//返回正在执行的函数的调用者 speak函数
+			console.log(arguments.callee.caller)
+		}
+
+		var speak = function() {
+			talk()
+		}
+
+		speak()
+	</script>
+	<script>
+		var log = function() {
+			console.log.apply(console, arguments)
+		}
+		//ajax 出现之后，用户不必刷新整个页面，就可以得到局部页面的更新
+		//ajax 也可以同步，但是大部分开发者都会让其异步，从服务器获取数据，然后找到网页中的 dom 元素，再将请求到的数据填充进去
+		//ajax 通信与数据格式无关。这种技术就是无需刷新页面，即可从服务器获取数据，但不一定是 xml 数据格式。
+		
+		//兼容 IE 各个版本的创建 XMLHttpRequest 对象的方法
+		function createXML() {
+			if(typeof XMLHttpRequest !== undefined) {
+				return new XMLHttpRequest()
+			} else if(typeof ActiveXObject !== undefined){
+				if (typeof arguments.callee.activeXString !== 'string') {
+					var versions = ['MSXML2.XMLHttp.6.0', 'MSXML2.XMLHttp.3.0', 'MSXML2.XMLHttp']
+					var len = versions.length
+					for (var i = 0; i < len; i++) {
+						try {
+							new ActiveXObject("versions[i]")
+							arguments.callee.activeXString = versions[i]
+							break
+						}
+						catch (ex){
+							throw new Error(ex)
+						}
+					}
+				}
+			} else {
+				throw new Error('您的浏览器不支持 XMLHttpRequest 对象')
+			}
+		}
+		
+
+		/*1、在实例化 xml 对象之后，要在调用 open（） 方法之前指定 onreadystatechange 事件处理程序才能确保跨浏览器的兼容性。
+		2、在注册时间处理程序时，我们用的是 dom0级写法。与其他事件处理程序不同，这里并没有向 onreadystatechange 事件处理程序中传递 event 对象，必须经过 xml 对象本身来确定下一步该怎么做
+		3、url 处理（即请求字符串的处理）请求查询字符串必须经过正确的编码才可以。查询字符串的键与值都要经过 encodeURIComponent() 编码才能放到 url 的末尾，而且所有的键值对要由 & 相连。
+		4、设置请求头应该在open 方法之后，在 send 方法之前*/
+
+		//下面这个函数可以辅助向现有 url 的末尾添加查询字符串
+		function addQueryParam(url, key, value) {
+			url += url.indexOf('?') === -1 ? "?" : "&"
+			url += encodeURIComponent(key) + "=" + encodeURIComponent(value)
+			return url
+		}
+
+		var baseUrl = 'http:www.baidu.com/'
+		var url = baseUrl + addQueryParam(baseurl, name, nake)
+		var xml = createXML()
+		xml.onreadystatechange = function() {
+			if (xhr.readyState === 4) {
+				if (xhr.status === 200 || xhr.status === 304) {
+					log('请求成功')
+				} else {
+					log('请求失败' + xhr.status)
+				}
+			}
+		}
+		xml.open('GET', url, ture)
+		xml.send(null)
+	</script>
+</body>
+</html>
