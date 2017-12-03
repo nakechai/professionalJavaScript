@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>testImgPing JSONP</title>
+</head>
+<body>
+	<!-- <img src="http://192.168.1.6:8080/问题01.png" alt=""> -->
+	<script>
+		var log = function() {
+			console.log.apply(console, arguments)
+		}
+
+		//利用 img 标签来访问其他域的图片
+		//1、利用 js 动态创建 img 标签；
+		//2、指定 img 标签的 src 属性为其他域的图片地址
+		//3、将图片插入到 html 中的 dom 元素上。
+		//4、给 img dom 元素注册响应事件来监听其是否加载完成
+		var img = new Image(300, 300)
+		img.onload = function() {
+			log('图片已加载')
+		}
+		img.src = 'http://192.168.1.6:8080/问题01.png'
+		document.body.appendChild(img)
+
+		//利用 JSONP 实现其他域的数据加载
+		//1、本域中利用 js 动态创建 script 标签
+		//2、指定 script 标签的 src 属性为其他域的地址
+		//3、 将script 插入到 html 中的 dom 元素上
+		//4、在本域中指定（定义）处理数据的函数
+		//5、在其他域中调用处理数据的函数
+		var script = document.createElement('script')
+		script.src = 'http://192.168.1.6:8080/handleJSON.js'
+		document.body.appendChild(script)
+		var handleJSON = function(data) {
+			var data = data.height
+			var div = document.createElement('div')
+			div.innerHTML = data
+			document.body.appendChild(div)
+		}
+
+
+	</script>
+</body>
+</html>
