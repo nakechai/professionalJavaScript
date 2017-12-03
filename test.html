@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>原生 XMLHttpRequest 请求外域的文件、图片</title>
+	<style>
+		#id-div-data {
+			height: 300px;
+			width: 300px;
+			background-color: red;
+		}
+
+		#id-div-progress {
+			height: 300px;
+			width: 300px;
+			background-color: green;
+		}
+	</style>
+</head>
+<body>
+	<h1>hello world</h1>
+	<h2>数据</h2>
+	<div id="id-div-data"></div>
+	<div id='id-div-progress'></div>
+	<img alt="图片">
+	<script>
+	//使用 node 安装 anywhere 模块，可以升起服务器（注意：用 anywhere 升起的服务器，响应头的 Access-Control-Allow-Origin 字段为 *，所以在跨域请求资源时都可以成功。只是注意一般请求本域的资源时，用相对路径；请求他域资源时，用绝对路径；纯粹是便于区分。）
+	//在请求他域图片时，要注意设置 xml 的 responseType 为 "blob"，并且在 xml 的事件处理程序 onreadystatechange 中初始化 Blob 的实例，并将该实例赋值给 dom 元素。
+
+		var log = function() {
+			console.log.apply(console, arguments)
+		}
+
+		var div = document.querySelector("#id-div-data")
+		var progress = document.querySelector('#id-div-progress')
+
+		var r = new XMLHttpRequest()
+		r.onreadystatechange = function() {
+			if(r.readyState === 4 && r.status ===200) {
+				log('成功', r.responseText)
+				div.innerHTML = r.responseText
+			} else if (r.readyState !== 1 || r.readyState !== 2 || r.readyState !== 3){
+				log('失败' + r.readyState + new Error(r))
+			}
+		}
+
+		r.onprogress = function(event) {
+			log('event', event)
+			progress.innerHTML = '已经下载了' + (event.loaded / event.total * 100) + '%'
+		}
+
+		// var baseUrl = 'http://192.168.1.6:8080/'
+		var baseUrl = '/'
+		var url = baseUrl + 'data.json'
+		r.open('GET', url, true)
+		r.send(null)
+
+		var rr = new XMLHttpRequest()
+		rr.onreadystatechange = function() {
+			var img = document.querySelector('img')
+			if (rr.readyState === 4 && rr.status === 200) {
+				log("请求图片成功", rr.response)
+				log(rr.status)
+				var blob = new Blob([rr.response], {type: "application/octect-binary"})
+				log('blob', blob)
+				img.src = window. URL.createObjectURL(blob)
+			} else if (rr.readyState !== 1 || rr.readyState !== 2 || rr.readyState !== 3){
+				log('rr失败')
+			}
+		}
+		// rr.open('get', 'http://192.168.1.6:8080/问题01.png', true)
+		rr.open('get', '/问题01.png', true)
+		rr.responseType = "blob";
+		// r.setRequestHeader()
+		rr.send()
+	</script>
+</body>
+</html>
