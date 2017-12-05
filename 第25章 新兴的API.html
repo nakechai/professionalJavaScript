@@ -6,22 +6,34 @@
 	<style>
 		#id-div-container {
 			background: red;
-			width: 500px;
+			width: 5px;
 			height: 200px;
-			text-align: center;
+			/*text-align: center;*/
+			
 		}
 	</style>
 </head>
 <body>
-	<div id="id-div-container">
-		<h1>hello world</h1>
+	<div id="id-div-container" >
+		<!-- <h1>hello world</h1> -->
 	</div>
 	<script>
-		var div = document.querySelector('#id-div-container')
+		var log = function() {
+			console.log.apply(console, arguments)
+		}
 
 		function updteProgress(){
+			var div = document.getElementById('id-div-container')
+			log('122')
+			// div.width = (parseInt(div.width, 10) + 5) + "px"
+			log('div.style.width', div.style.width)
 
+			// if (div.width !== '500px') {
+			// 	requestAnimationFrame(updteProgress)
+			// }
 		}
+		// requestAnimationFrame(updteProgress)
+		updteProgress()
 	</script>
 </body>
 </html>

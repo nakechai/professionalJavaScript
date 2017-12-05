@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>overflow练习</title>
+	<style>
+		#id-img {
+			width: 200px;
+			height: 200px;
+			overflow: hidden;
+			position: absolute;
+		}
+
+		#id-div-container {
+			position: relative;
+		}
+	</style>
+</head>
+<body>
+	<h1>overflow练习</h1>
+	<p>下面的是一些选项，鼠标放到超链接上会显示其图片</p>
+	<ol>
+		<li>
+			<a>有道云笔记</a>
+		</li>
+		<li>
+			<a>百度网盘</a>
+		</li>
+		<li>
+			<a>腾讯QQ</a>
+		</li>
+	</ol>
+	<div id="id-div-container">
+		<img src="5.png" alt="图片" id="id-img">
+	</div>
+	<script>
+		function move(elementId, xFinal, yFinal, interval) {
+			var e = document.getElementById(elementId)
+
+			if(e.movement) {
+				clearTimeout(e.movement)
+			}
+
+			var xpos = parseInt(e.style.left)
+			var ypos = parseInt(e.style.top)
+
+			if (xpos === xFinal && ypos === yFinal) {
+				return true
+			}
+			if (xpos < xFinal) {
+				xpos++
+			}
+			if (xpos > xFinal) {
+				xpos--
+			}
+			if (ypos < yFinal) {
+				ypos++
+			}
+			if (ypos > yFinal) {
+				ypos--
+			}
+
+			e.style.left = xpos + 'px'
+			e.style.top = ypos + 'px'
+
+			e.movement = setTimeout(move, interval)
+		}
+
+		var img = document.createElement('img')
+		img.setAttribute('src', './5.png')
+		img.setAttribute('alt', '图片')
+		img.id = 'id-img'
+
+		var div = document.createElement('div')
+		div.setAttribute('id', 'id-div-container')
+
+		div.appendChild(img)
+		document.body.appendChild('div')
+
+		var links = document.getElementsByTagName('a')
+		links[0].addEventListener('mouseover', move('id-img', -100, 0, 10), false)
+		links[1].addEventListener('mouseover', move('id-img', -200, 0, 10), false)
+		links[2].addEventListener('mouseover', move('id-img', -300, 0, 10), false)
+	</script>
+</body>
+</html>
